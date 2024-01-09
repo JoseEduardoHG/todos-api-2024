@@ -1,0 +1,7 @@
+{
+  "verbose": false,
+  "ignore": ["node_modules"],
+  "watch": ["dist"],
+  "ext": "js",
+  "exec": "node -r dotenv/config dist/index.js"
+}

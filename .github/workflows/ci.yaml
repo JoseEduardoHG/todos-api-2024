@@ -16,7 +16,7 @@ jobs:
     name: Changed files
     runs-on: ubuntu-latest
     outputs:
-      files_changed: ${{ steps.files-changed.outputs.any_changed }}
+      has_files_changed: ${{ steps.files-changed.outputs.any_changed }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,11 +31,14 @@ jobs:
             tsconfig.json
             jest.config.js
             webpack.config.js
+          files_ignore: |
+            docs/**
+            **/*.md
   build:
     name: Build
-    runs-on: ubuntu-latest
-    if: ${{ jobs.changed-files.outputs.files_changed == true } }}
     needs: changed-files
+    runs-on: ubuntu-latest
+    if: ${{ needs.changed-files.outputs.has_files_changed == true } }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -54,9 +57,9 @@ jobs:
       #     path: dist
   lint:
     name: Lint
-    runs-on: ubuntu-latest
-    if: ${{ jobs.changed-files.outputs.files_changed == true } }}
     needs: changed-files
+    runs-on: ubuntu-latest
+    if: ${{ needs.changed-files.outputs.has_files_changed == true } }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -70,9 +73,9 @@ jobs:
         run: npm run lint
   tests:
     name: Tests
-    runs-on: ubuntu-latest
-    if: ${{ jobs.changed-files.outputs.files_changed == true } }}
     needs: changed-files
+    runs-on: ubuntu-latest
+    if: ${{ needs.changed-files.outputs.has_files_changed == true } }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js

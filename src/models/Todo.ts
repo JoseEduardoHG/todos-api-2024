@@ -1,7 +1,7 @@
 import modelOptions from '@config/modelOptions';
-import mongoose from 'mongoose';
+import { InferSchemaType, Schema, model } from 'mongoose';
 
-const TodoSchema = new mongoose.Schema(
+const TodoSchema = new Schema(
   {
     content: {
       type: String,
@@ -14,7 +14,7 @@ const TodoSchema = new mongoose.Schema(
       default: false,
     },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
@@ -22,6 +22,6 @@ const TodoSchema = new mongoose.Schema(
   modelOptions,
 );
 
-type Todo = mongoose.InferSchemaType<typeof TodoSchema>;
+type Todo = InferSchemaType<typeof TodoSchema>;
 
-export default mongoose.model<Todo>('Todo', TodoSchema);
+export default model<Todo>('Todo', TodoSchema);

@@ -12,33 +12,29 @@ on:
       - main
 
 jobs:
-  changed-files:
-    name: Changed files
+  docs-only:
+    name: Check if files to ignored changed
     runs-on: ubuntu-latest
     outputs:
-      has_files_changed: ${{ steps.files-changed.outputs.any_changed }}
+      only_modified: ${{ steps.changed-ignored.outputs.only_modified }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - name: Check changed files
-        id: files-changed
+        id: changed-ignored
         uses: tj-actions/changed-files@v41
         with:
           files: |
-            src/**
-            package*.json
-            tsconfig.json
-            jest.config.js
-            webpack.config.js
-          files_ignore: |
             docs/**
-            **/*.md
+            **.md
+            .github/**
+            .husky/**
   build:
     name: Build
-    needs: changed-files
+    needs: docs-only
     runs-on: ubuntu-latest
-    if: ${{ needs.changed-files.outputs.has_files_changed == 'true' }}
+    if: ${{ needs.docs-only.outputs.only_modified == 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -57,9 +53,9 @@ jobs:
       #     path: dist
   lint:
     name: Lint
-    needs: changed-files
+    needs: docs-only
     runs-on: ubuntu-latest
-    if: ${{ needs.changed-files.outputs.has_files_changed == 'true' }}
+    if: ${{ needs.docs-only.outputs.only_modified == 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -73,9 +69,9 @@ jobs:
         run: npm run lint
   tests:
     name: Tests
-    needs: changed-files
+    needs: docs-only
     runs-on: ubuntu-latest
-    if: ${{ needs.changed-files.outputs.has_files_changed == 'true' }}
+    if: ${{ needs.docs-only.outputs.only_modified == 'false' }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js

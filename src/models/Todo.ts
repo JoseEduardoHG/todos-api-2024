@@ -3,9 +3,11 @@ import mongoose from 'mongoose';
 
 const TodoSchema = new mongoose.Schema(
   {
-    title: {
+    content: {
       type: String,
       required: true,
+      maxLength: [100, 'Content must be at most 100 characters.'],
+      trim: true,
     },
     completed: {
       type: Boolean,

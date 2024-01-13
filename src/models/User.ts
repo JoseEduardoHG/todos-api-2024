@@ -1,16 +1,24 @@
 import modelOptions from '@config/modelOptions';
 import { SALT_WORK_FACTOR } from '@constants/encryptValues';
 import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
+import { InferSchemaType, Schema, model } from 'mongoose';
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new Schema(
   {
     email: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/^[\w-+.]+@(\w+\.)+\w+$/, 'Please fill a valid email address'],
     },
-    displayName: String,
+    displayName: {
+      type: String,
+      minLength: [3, 'Name must be at least 3 characters.'],
+      maxLength: [20, 'Name must be at most 20 characters.'],
+      trim: true,
+    },
     salt: {
       type: String,
       required: true,
@@ -20,8 +28,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       select: false,
+      trim: true,
+      match: [
+        /^((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,20})$/,
+        'Please fill a valid password',
+      ],
     },
-    refreshToken: String,
+    refreshToken: {
+      type: String,
+      select: false,
+    },
   },
   modelOptions,
 );
@@ -40,11 +56,6 @@ UserSchema.methods.verifyPassword = async function (candidatePassword: string) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-type User = mongoose.InferSchemaType<typeof UserSchema>;
+type User = InferSchemaType<typeof UserSchema>;
 
-// declare interface User extends mongoose.InferSchemaType<typeof UserSchema> {
-//   hashPassword(password: string): void;
-//   verifyPassword(candidatePassword: string): boolean;
-// }
-
-export default mongoose.model<User>('User', UserSchema);
+export default model<User>('User', UserSchema);

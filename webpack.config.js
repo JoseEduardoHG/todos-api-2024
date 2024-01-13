@@ -24,8 +24,10 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '...'], // enables users to leave off the extension when importing
     alias: {
+      '@config': path.resolve(__dirname, 'src/config/'),
       '@constants': path.resolve(__dirname, 'src/constants/'),
       '@controllers': path.resolve(__dirname, 'src/controllers/'),
+      '@handlers': path.resolve(__dirname, 'src/handlers/'),
       '@lib': path.resolve(__dirname, 'src/lib/'),
       '@models': path.resolve(__dirname, 'src/models/'),
       '@routes': path.resolve(__dirname, 'src/routes/'),

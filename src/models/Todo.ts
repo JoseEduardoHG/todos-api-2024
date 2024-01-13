@@ -1,7 +1,14 @@
-import modelOptions from '@config/modelOptions';
-import { InferSchemaType, Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
-const TodoSchema = new Schema(
+interface Todo {
+  content: string;
+  completed: boolean;
+  owner: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const TodoSchema = new Schema<Todo>(
   {
     content: {
       type: String,
@@ -11,6 +18,7 @@ const TodoSchema = new Schema(
     },
     completed: {
       type: Boolean,
+      required: true,
       default: false,
     },
     owner: {
@@ -19,9 +27,7 @@ const TodoSchema = new Schema(
       required: true,
     },
   },
-  modelOptions,
+  { timestamps: true },
 );
-
-type Todo = InferSchemaType<typeof TodoSchema>;
 
 export default model<Todo>('Todo', TodoSchema);

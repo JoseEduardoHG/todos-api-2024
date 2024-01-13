@@ -1,9 +1,12 @@
+import { connectDB } from '@lib/db/connectDB';
 import { env } from '@lib/env';
 import logger from '@utils/serverLogs';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
+
+connectDB();
 
 const PORT = env.PORT;
 const app = express();

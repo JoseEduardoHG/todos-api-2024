@@ -2,7 +2,13 @@ import { env } from '@lib/env';
 import { connect, connection } from 'mongoose';
 
 export async function connectDB() {
-  const db = await connect(env.MONGODB_URL);
+  const db = await connect(env.MONGODB_URL, {
+    dbName: env.MONGO_INITDB_DATABASE,
+    auth: {
+      username: env.MONGO_INITDB_ROOT_USERNAME,
+      password: env.MONGO_INITDB_ROOT_PASSWORD,
+    },
+  });
   console.log(`MongoDB Connected to ${db.connection.db.databaseName}`);
 }
 

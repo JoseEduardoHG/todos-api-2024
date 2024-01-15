@@ -5,7 +5,6 @@ import { Model, Schema, model } from 'mongoose';
 interface User {
   email: string;
   displayName?: string;
-  salt: string;
   password: string;
   refreshToken?: string;
   createdAt: Date;
@@ -13,7 +12,7 @@ interface User {
 }
 
 interface UserMethods {
-  hashPassword(password: string): void;
+  // hashPassword(password: string): void;
   arePasswordsTheSame(password: string): boolean;
 }
 
@@ -35,11 +34,6 @@ const UserSchema = new Schema<User, UserModel, UserMethods>(
       maxLength: [20, 'Name must be at most 20 characters.'],
       trim: true,
     },
-    salt: {
-      type: String,
-      required: true,
-      select: false,
-    },
     password: {
       type: String,
       required: true,
@@ -58,18 +52,16 @@ const UserSchema = new Schema<User, UserModel, UserMethods>(
   { timestamps: true },
 );
 
-UserSchema.method(
-  'hashPassword',
-  async function (password: string): Promise<void> {
-    // generate a salt
-    const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
-    // hash the password using our new salt
-    const hashPassword = await bcrypt.hash(password, salt);
+UserSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
 
-    this.salt = salt;
-    this.password = hashPassword;
-  },
-);
+  // generate salt
+  const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+  // hash the password using our new salt
+  const hashPassword = await bcrypt.hash(this.password, salt);
+
+  this.password = hashPassword;
+});
 
 UserSchema.method(
   'arePasswordsTheSame',

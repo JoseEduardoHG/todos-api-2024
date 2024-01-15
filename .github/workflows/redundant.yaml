@@ -1,0 +1,23 @@
+name: Cancel previos runs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  canvel-previous-runs:
+    name: Cancel previous runs
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      actions: write
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+          workflow_id: 82089552
+          all_but_latest: true

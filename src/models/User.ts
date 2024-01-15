@@ -37,12 +37,12 @@ const UserSchema = new Schema<User, UserModel, UserMethods>(
     password: {
       type: String,
       required: true,
-      select: false,
       trim: true,
       match: [
         /^((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,20})$/,
         'Please fill a valid password',
       ],
+      select: false,
     },
     refreshToken: {
       type: String,
